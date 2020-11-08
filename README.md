@@ -1,14 +1,16 @@
-## Cat Save Us! 🛸 👾 🐈
+# Cat Save Us! 🛸 👾 🐈
 
 * * *
 
-### Overview
+## Overview
 
-This is a simple Pygame-based ~alien~ cat shooter game that I did for Python practice.  It's based on the tutorial from the excellent [Python Crash Course](https://nostarch.com/pythoncrashcourse2e/) book.
+This is a simple Pygame-based ~alien shooter~ cat game that I made for Python/Pygame practice.  It's based on the tutorial from the excellent [Python Crash Course](https://nostarch.com/pythoncrashcourse2e/) book.
 
 Read more about Pygame here: https://www.pygame.org/wiki/about
 
-**Requirements:**
+* * *
+
+## Requirements:
 - Python 3
 - Pygame
 
@@ -25,12 +27,14 @@ $ python3 -m pip install --user pygame
 
 > If this command doesn’t work on macOS, try running the command again without the `--user` flag.
 
+* * *
+
 ## Running the Game
 
-To run this game, navigate to the directory with the `alien_invasion.py` file and run:
+To run this game, navigate to the directory with the `cat_save_us.py` file and run:
 
 ```
-python3 alien_invasion.py
+python3 cat_save_us.py
 ```
 
 Type `q` to quit out of the game.
