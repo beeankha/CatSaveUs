@@ -2,15 +2,17 @@ import pygame
 import sys
 
 from random import randint
+from time import sleep
 
-from settings import Settings
-from cat import Cat
-from bullet import Bullet
 from alien import Alien
+from bullet import Bullet
+from cat import Cat
+from game_stats import GameStats
+from settings import Settings
 from stars import Stars
 
 
-class AlienInvasion:
+class CatSaveUs:
     """Overall class to manage game assets and behavior."""
 
     def __init__(self):
@@ -22,13 +24,13 @@ class AlienInvasion:
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         # (the pygame method get_rect() returns a Rect object from an image)
-        pygame.display.set_caption("Alien Invasion!")
+        pygame.display.set_caption("Cat Save Us!")
 
-        # Set the background color.
-        self.bg_color = (35, 96, 105)
+        # Create an instance to store game stats.
+        self.stats = GameStats(self)
 
         self.cat = Cat(self)
-        # ^^ The self argument here refers to the current instance of AlienInvasion.
+        # ^^ The self argument here refers to the current instance of CatSaveUs.
 
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -42,12 +44,46 @@ class AlienInvasion:
         while True:
             self._check_events()
             # ^^ The above calls a helper method!
-            self.cat.update()
-            # ^^ The cat's position will be updated after checking for keyboard events!
-            self._update_bullets()
-            self._update_aliens()
+
+            if self.stats.game_active:
+                self.cat.update()
+                # ^^ The cat's position will be updated after checking for keyboard events!
+                self._update_bullets()
+                self._update_aliens()
+
             self._update_screen()
             # ^^ Same here!
+
+    def _create_starry_sky(self):
+        """Instantiate a sky full of stars for the game's background."""
+
+        random_number = randint(1, 10)
+
+        # Make a star.
+        star = Stars(self)
+        star_width, star_height = star.rect.size
+        available_space_stars_x = self.settings.screen_width - (star_width)
+        number_stars_x = available_space_stars_x // (star_width)
+
+        # Determine the number of rows of stars that fit on the screen.
+        available_space_stars_y = (self.settings.screen_height - (star_height))
+        star_number_rows = available_space_stars_y // (star_height)
+
+        # Create the full sky of randomly placed stars.
+
+        for star_row_number in range(star_number_rows):
+            for star_number in range(number_stars_x):
+                self._create_stars(star_number, star_row_number)
+
+    def _create_stars(self, star_number, star_row_number):
+        star = Stars(self)
+        random_range = randint(-10, 10)
+        random_number = randint(1, 10)
+
+        # star_width, star_height = star.rect.size
+        star.rect.x = random_range + random_number * star.rect.width * star_number
+        star.rect.y = random_range + random_number * star.rect.height * star_row_number
+        self.stars.add(star)
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
@@ -80,7 +116,6 @@ class AlienInvasion:
             self.bullets.empty()
             self._create_fleet()
 
-
     def _update_aliens(self):
         """
         Check if the fleet is at an edge, then update the
@@ -91,7 +126,29 @@ class AlienInvasion:
 
         # Look for alien-cat collisions.
         if pygame.sprite.spritecollideany(self.cat, self.aliens):
-            print("Kitty hit!!!")
+            self._cat_hit()
+
+        # Look for aliens hitting the bottom of the screen.
+        self._check_aliens_bottom()
+
+    def _cat_hit(self):
+        """Respond to the cat being hit by an alien ship."""
+        if self.stats.cats_left > 0:
+            # Decrement cats_left.
+            self.stats.cats_left -= 1
+
+            # Get rid of any remaining aliens and bullets.
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # Create a new fleet and center the cat.
+            self._create_fleet()
+            self.cat.center_cat()
+
+            # Pause.
+            sleep(1)
+        else:
+            self.stats.game_active = False
 
     def _check_events(self):
         # This is a helper method, for refactoring practice!!
@@ -177,36 +234,14 @@ class AlienInvasion:
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
 
-    def _create_starry_sky(self):
-        """Instantiate a sky full of stars for the game's background."""
-
-        random_number = randint(1, 10)
-
-        # Make a star.
-        star = Stars(self)
-        star_width, star_height = star.rect.size
-        available_space_stars_x = self.settings.screen_width - (star_width)
-        number_stars_x = available_space_stars_x // (star_width)
-
-        # Determine the number of rows of stars that fit on the screen.
-        available_space_stars_y = (self.settings.screen_height - (star_height))
-        star_number_rows = available_space_stars_y // (star_height)
-
-        # Create the full sky of randomly placed stars.
-
-        for star_row_number in range(star_number_rows):
-            for star_number in range(number_stars_x):
-                self._create_stars(star_number, star_row_number)
-
-    def _create_stars(self, star_number, star_row_number):
-        star = Stars(self)
-        random_range = randint(-10, 10)
-        random_number = randint(1, 10)
-
-        # star_width, star_height = star.rect.size
-        star.rect.x = random_range + random_number * star.rect.width * star_number
-        star.rect.y = random_range + random_number * star.rect.height * star_row_number
-        self.stars.add(star)
+    def _check_aliens_bottom(self):
+        """Check if any aliens have reached the bottom of the screen."""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                # Treat this the same as if the cat (player) got hit.
+                self._cat_hit()
+                break
 
     def _update_screen(self):
         """Update images on the screen, and flip to a new screen."""
@@ -230,7 +265,7 @@ class AlienInvasion:
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
-    ai = AlienInvasion()
+    ai = CatSaveUs()
     ai.run_game()
     # ^^ Here we create an instance of the game, and then call run_game(). We place run_game()
     # in an if block that only runs if the file is called directly.

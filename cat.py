@@ -11,7 +11,7 @@ class Cat:
         # In Pygame, "rect" = rectangles.
 
         # Load the cat image and get its rect.
-        self.image = pygame.image.load('images/cat.bmp')
+        self.image = pygame.image.load('images/cat.png')
         self.rect = self.image.get_rect()
 
         # Start each new cat at the bottom center of the screen.
@@ -43,3 +43,8 @@ class Cat:
         """Draw the cat at its current location."""
         self.screen.blit(self.image, self.rect)
         # The position is specified by self.rect.
+
+    def center_cat(self):
+        """Center the cat on the screen."""
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
