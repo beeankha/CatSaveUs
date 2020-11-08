@@ -4,6 +4,8 @@
 
 ## Overview
 
+![gameplay](/images/screenshot.png)
+
 This is a simple Pygame-based ~alien shooter~ cat game that I made for Python/Pygame practice.  It's based on the tutorial from the excellent [Python Crash Course](https://nostarch.com/pythoncrashcourse2e/) book.
 
 Read more about Pygame here: https://www.pygame.org/wiki/about
@@ -36,5 +38,11 @@ To run this game, navigate to the directory with the `cat_save_us.py` file and r
 ```
 python3 cat_save_us.py
 ```
+
+## Game Controls
+
+Use the left and right arrow keys to move the cat.
+
+Press the spacebar to shoot bullets.
 
 Type `q` to quit out of the game.
