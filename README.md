@@ -4,7 +4,7 @@
 
 ### Overview
 
-This is a simple Pygame-based ~alien~ cat shooter game that I did for Python practice.  It's from the excellent [Python Crash Course](https://nostarch.com/pythoncrashcourse2e/) book.
+This is a simple Pygame-based ~alien~ cat shooter game that I did for Python practice.  It's based on the tutorial from the excellent [Python Crash Course](https://nostarch.com/pythoncrashcourse2e/) book.
 
 Read more about Pygame here: https://www.pygame.org/wiki/about
 
@@ -32,3 +32,5 @@ To run this game, navigate to the directory with the `alien_invasion.py` file an
 ```
 python3 alien_invasion.py
 ```
+
+Type `q` to quit out of the game.
