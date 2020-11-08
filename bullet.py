@@ -30,3 +30,33 @@ class Bullet(Sprite):
     def draw_bullet(self):
         """Draw the bullet to the screen."""
         pygame.draw.rect(self.screen, self.color, self.rect)
+
+
+class ShockWave(Sprite):
+    """A class to manage shockwaves fired from the cat."""
+
+    def __init__(self, ai_game):
+        """Create a shockwave object at the cat's current position."""
+        super().__init__()
+        self.screen = ai_game.screen
+        self.settings = ai_game.settings
+        self.color = self.settings.shock_wave_color
+
+        # Create a bullet rect at (0, 0) and then set correct position.
+        self.rect = pygame.Rect(0, 0, self.settings.shock_wave_width,
+            self.settings.shock_wave_height)
+        self.rect.midtop = ai_game.cat.rect.midtop
+
+        # Store the bullet's position as a decimal value.
+        self.y = float(self.rect.y)
+
+    def update(self):
+        """Move the shockwave up the screen."""
+        # Update the decimal position of the bullet.
+        self.y -= self.settings.shock_wave_speed
+        # Update the rect position.
+        self.rect.y = self.y
+
+    def draw_shock_wave(self):
+        """Draw the shockwave to the screen."""
+        pygame.draw.rect(self.screen, self.color, self.rect)

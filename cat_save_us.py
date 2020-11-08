@@ -5,7 +5,7 @@ from random import randint
 from time import sleep
 
 from alien import Alien
-from bullet import Bullet
+from bullet import Bullet, ShockWave
 from button import Button
 from cat import Cat
 from game_stats import GameStats
@@ -34,9 +34,9 @@ class CatSaveUs:
         self.cat = Cat(self)
         # ^^ The self argument here refers to the current instance of CatSaveUs.
         self.cat_face = Cat(self)
-        # ^^ The self argument here refers to the current instance of CatSaveUs.
 
         self.bullets = pygame.sprite.Group()
+        self.shock_waves = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.stars = pygame.sprite.Group()
 
@@ -56,6 +56,7 @@ class CatSaveUs:
                 self.cat.update()
                 # ^^ The cat's position will be updated after checking for keyboard events!
                 self._update_bullets()
+                self._update_shock_waves()
                 self._update_aliens()
 
             self._update_screen()
@@ -105,19 +106,25 @@ class CatSaveUs:
 
         self._check_bullet_alien_collisions()
 
+    def _update_shock_waves(self):
+        """Update position of the shockwave and get rid of old shockwaves."""
+        # Update shockwave positions.
+        self.shock_waves.update()
+        # ^^ Updates the position of the bullets on each pass through
+
+        # Get rid of shockwaves that have disappeared.
+        for shock_wave in self.shock_waves.copy():
+            if shock_wave.rect.bottom <= 0:
+                self.shock_waves.remove(shock_wave)
+
+        self._check_shock_wave_alien_collisions()
+
     def _check_bullet_alien_collisions(self):
         """Respond to bullet-alien collisions."""
         # Remove any bullets and aliens that have collided.
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
         # ^^ The sprite.groupcollide() function compares the rects of each element
         # in one group with the rects of each element in another group.
-
-        # NOTE
-        # To make a high-powered bullet that can travel to the top of the screen,
-        # destroying every alien in its path, you could set the first Boolean
-        # argument to False and keep the second Boolean argument set to True.
-        # The aliens hit would disappear, but all bullets would stay active until
-        # they disappeared off the top of the screen.
 
         if collisions:
             for aliens in collisions.values():
@@ -134,6 +141,19 @@ class CatSaveUs:
             # Increase level.
             self.stats.level += 1
             self.sb.prep_level()
+
+    def _check_shock_wave_alien_collisions(self):
+        """Respond to shockwave-alien collisions."""
+        # Remove any bullets and aliens that have collided.
+        shock_wave_collisions = pygame.sprite.groupcollide(self.shock_waves, self.aliens, False, True)
+        # ^^ The sprite.groupcollide() function compares the rects of each element
+        # in one group with the rects of each element in another group.
+
+        if shock_wave_collisions:
+            for aliens in shock_wave_collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()
+            self.sb.check_high_score()
 
     def _update_aliens(self):
         """
@@ -160,6 +180,7 @@ class CatSaveUs:
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
             self.bullets.empty()
+            self.shock_waves.empty()
 
             # Create a new fleet and center the cat.
             self._create_fleet()
@@ -211,6 +232,7 @@ class CatSaveUs:
         # Get rid of any remaining aliens and bullets.
         self.aliens.empty()
         self.bullets.empty()
+        self.shock_waves.empty()
 
         # Create a new fleet and center the cat.
         self._create_fleet()
@@ -226,7 +248,8 @@ class CatSaveUs:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
-        # TODO (implement a superbullet feature!)
+        elif event.key == pygame.K_LSHIFT:
+            self._fire_shock_wave()
 
     def _check_keyup_events(self, event):
         """Respond to key releases."""
@@ -240,6 +263,12 @@ class CatSaveUs:
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+
+    def _fire_shock_wave(self):
+        """Create a new shockwave and add it to the shockwaves group."""
+        if len(self.shock_waves) < self.settings.shock_waves_allowed:
+            new_shock_wave = ShockWave(self)
+            self.shock_waves.add(new_shock_wave)
 
     def _create_fleet(self):
         """Create the fleet of aliens."""
@@ -305,6 +334,8 @@ class CatSaveUs:
         self.cat.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        for shock_wave in self.shock_waves.sprites():
+            shock_wave.draw_shock_wave()
         self.aliens.draw(self.screen)
 
         # Draw the score information.

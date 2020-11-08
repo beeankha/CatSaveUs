@@ -45,4 +45,8 @@ Use the left and right arrow keys to move the cat.
 
 Press the spacebar to shoot bullets.
 
+Press the left shift key to shoot a shockwave!
+
+![shockwave](/images/shockwave.png)
+
 Type `q` to quit out of the game.
