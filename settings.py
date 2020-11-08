@@ -19,15 +19,21 @@ class Settings:
 
         # Bullet settings
         self.bullet_width = 8
-        self.bullet_height = 12
+        self.bullet_height = 20
         self.bullet_color = (200, 0, 200)
         self.bullets_allowed = 20
+
+        # Shockwave settings
+        self.shock_wave_width = 300
+        self.shock_wave_height = 12
+        self.shock_wave_color = (255, 0, 0)
+        self.shock_waves_allowed = 1
 
         # Alien settings
         self.fleet_drop_speed = 10
 
         # How quickly the game speeds up
-        self.speedup_scale = 1.3
+        self.speedup_scale = 1.2
 
         # How quickly the alien point values increase
         self.score_scale = 1.5
@@ -39,6 +45,7 @@ class Settings:
         self.cat_speed = 5
         # (the higher the number, the faster the cat)
         self.bullet_speed = 5.0
+        self.shock_wave_speed = 1.5
         self.alien_speed = 2
 
         # fleet_direction of 1 represents right; -1 represents left.
@@ -51,6 +58,7 @@ class Settings:
         """Increase speed settings and alien point values."""
         self.cat_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
+        self.shock_wave_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
 
         self.alien_points = int(self.alien_points * self.score_scale)
