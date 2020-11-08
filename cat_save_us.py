@@ -9,6 +9,7 @@ from bullet import Bullet
 from button import Button
 from cat import Cat
 from game_stats import GameStats
+from scoreboard import Scoreboard
 from settings import Settings
 from stars import Stars
 
@@ -26,10 +27,13 @@ class CatSaveUs:
         # (the pygame method get_rect() returns a Rect object from an image)
         pygame.display.set_caption("Cat Save Us!")
 
-        # Create an instance to store game stats.
+        # Create an instance to store game stats and create a scoreboard.
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         self.cat = Cat(self)
+        # ^^ The self argument here refers to the current instance of CatSaveUs.
+        self.cat_face = Cat(self)
         # ^^ The self argument here refers to the current instance of CatSaveUs.
 
         self.bullets = pygame.sprite.Group()
@@ -108,16 +112,28 @@ class CatSaveUs:
         # ^^ The sprite.groupcollide() function compares the rects of each element
         # in one group with the rects of each element in another group.
 
+        # NOTE
         # To make a high-powered bullet that can travel to the top of the screen,
         # destroying every alien in its path, you could set the first Boolean
         # argument to False and keep the second Boolean argument set to True.
         # The aliens hit would disappear, but all bullets would stay active until
         # they disappeared off the top of the screen.
 
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()
+            self.sb.check_high_score()
+
         if not self.aliens:
             # Destroy existing bullets and create a new fleet.
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
+
+            # Increase level.
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _update_aliens(self):
         """
@@ -137,8 +153,9 @@ class CatSaveUs:
     def _cat_hit(self):
         """Respond to the cat being hit by an alien ship."""
         if self.stats.cats_left > 0:
-            # Decrement cats_left.
+            # Decrement cats_left, and update scoreboard.
             self.stats.cats_left -= 1
+            self.sb.prep_cats()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
@@ -179,9 +196,14 @@ class CatSaveUs:
         """Start a new game when the player clicks Play."""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
+            # Reset the game settings.
+            self.settings.initialize_dynamic_settings()
             # Reset the game statistics.
             self.stats.reset_stats()
             self.stats.game_active = True
+            self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_cats()
 
             # Hide the mouse cursor.
             pygame.mouse.set_visible(False)
@@ -284,6 +306,9 @@ class CatSaveUs:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
+        # Draw the score information.
+        self.sb.show_score()
 
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
