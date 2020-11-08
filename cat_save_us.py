@@ -6,6 +6,7 @@ from time import sleep
 
 from alien import Alien
 from bullet import Bullet
+from button import Button
 from cat import Cat
 from game_stats import GameStats
 from settings import Settings
@@ -20,9 +21,8 @@ class CatSaveUs:
         pygame.init()
         self.settings = Settings()
 
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.settings.screen_width = self.screen.get_rect().width
-        self.settings.screen_height = self.screen.get_rect().height
+        (width, height) = (self.settings.screen_width, self.settings.screen_height)
+        self.screen = pygame.display.set_mode((width, height))
         # (the pygame method get_rect() returns a Rect object from an image)
         pygame.display.set_caption("Cat Save Us!")
 
@@ -38,6 +38,9 @@ class CatSaveUs:
 
         self._create_starry_sky()
         self._create_fleet()
+
+        # Make the Play button.
+        self.play_button = Button(self, "Double Click to Play")
 
     def run_game(self):
         """Start the main loop for the game."""
@@ -149,6 +152,7 @@ class CatSaveUs:
             sleep(1)
         else:
             self.stats.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _check_events(self):
         # This is a helper method, for refactoring practice!!
@@ -164,6 +168,31 @@ class CatSaveUs:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.stats.game_active is True:
+                    pass
+                else:
+                    mouse_pos = pygame.mouse.get_pos()
+                    self._check_play_button(mouse_pos)
+
+    def _check_play_button(self, mouse_pos):
+        """Start a new game when the player clicks Play."""
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            # Reset the game statistics.
+            self.stats.reset_stats()
+            self.stats.game_active = True
+
+            # Hide the mouse cursor.
+            pygame.mouse.set_visible(False)
+
+        # Get rid of any remaining aliens and bullets.
+        self.aliens.empty()
+        self.bullets.empty()
+
+        # Create a new fleet and center the cat.
+        self._create_fleet()
+        self.cat.center_cat()
 
     def _check_keydown_events(self, event):
         """Respond to keypresses."""
@@ -198,13 +227,13 @@ class CatSaveUs:
         # Create an alien and find the number of aliens in a row.
         # Spacing between each alien is equal to one alien width.
         alien_width, alien_height = alien.rect.size
-        available_space_x = self.settings.screen_width - (2 * alien_width)
+        available_space_x = self.settings.screen_width - (alien_width)
         number_aliens_x = available_space_x // (2 * alien_width)
 
         # Determine the number of rows of aliens that fit on the screen.
         cat_height = self.cat.rect.height
         available_space_y = (self.settings.screen_height -
-                                (3 * alien_height) - cat_height)
+                                (2 * alien_height) - cat_height)
         number_rows = available_space_y // (2 * alien_height)
 
         # Create the full fleet of aliens.
@@ -255,6 +284,10 @@ class CatSaveUs:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
+        # Draw the play button if the game is inactive.
+        if not self.stats.game_active:
+            self.play_button.draw_button()
 
         # Make the most recently drawn screen visible.
         pygame.display.flip()
