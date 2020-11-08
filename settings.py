@@ -12,12 +12,19 @@ class Settings:
         self.bg_color = (0, 0, 0)
         # self.bg_color = (104, 130, 158) (greyish blue, aka "Daytime Mode")
 
-        # Ship settings
-        self.ship_speed = 3.5
+        # Cat settings
+        self.cat_speed = 5
+        # (the higher the number, the faster the cat)
 
         # Bullet settings
         self.bullet_speed = 5.0
-        self.bullet_width = 3
-        self.bullet_height = 10
+        self.bullet_width = 8
+        self.bullet_height = 12
         self.bullet_color = (200, 0, 200)
         self.bullets_allowed = 20
+
+        # Alien settings
+        self.alien_speed = 20
+        self.fleet_drop_speed = 10
+        # fleet_direction of 1 represents right; -1 represents left.
+        self.fleet_direction = 1
