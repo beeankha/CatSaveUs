@@ -65,8 +65,6 @@ class CatSaveUs:
     def _create_starry_sky(self):
         """Instantiate a sky full of stars for the game's background."""
 
-        random_number = randint(1, 10)
-
         # Make a star.
         star = Stars(self)
         star_width, star_height = star.rect.size
@@ -77,8 +75,7 @@ class CatSaveUs:
         available_space_stars_y = (self.settings.screen_height - (star_height))
         star_number_rows = available_space_stars_y // (star_height)
 
-        # Create the full sky of randomly placed stars.
-
+        # Create the full sky of stars.
         for star_row_number in range(star_number_rows):
             for star_number in range(number_stars_x):
                 self._create_stars(star_number, star_row_number)
