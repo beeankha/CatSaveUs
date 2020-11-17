@@ -46,6 +46,12 @@ class CatSaveUs:
         # Make the Play button.
         self.play_button = Button(self, "Double Click to Play")
 
+        bg_music = 'sounds/BuzzsawsOnMercury.wav'
+        pygame.mixer.init()
+        pygame.mixer.music.load(bg_music)
+        pygame.mixer.music.play(-1)  # the loop of -1 means this song will repeate indefinitely
+
+
     def run_game(self):
         """Start the main loop for the game."""
         while True:
@@ -122,8 +128,11 @@ class CatSaveUs:
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
         # ^^ The sprite.groupcollide() function compares the rects of each element
         # in one group with the rects of each element in another group.
+        collision_sound = pygame.mixer.Sound('sounds/AlienShipCrash.wav')
+        collision_sound.set_volume(0.3)
 
         if collisions:
+            pygame.mixer.Sound.play(collision_sound)
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
@@ -145,8 +154,11 @@ class CatSaveUs:
         shock_wave_collisions = pygame.sprite.groupcollide(self.shock_waves, self.aliens, False, True)
         # ^^ The sprite.groupcollide() function compares the rects of each element
         # in one group with the rects of each element in another group.
+        shockwave_sound = pygame.mixer.Sound('sounds/ShockWaveHit.wav')
+        shockwave_sound.set_volume(0.4)
 
         if shock_wave_collisions:
+            pygame.mixer.Sound.play(shockwave_sound)
             for aliens in shock_wave_collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
@@ -169,7 +181,13 @@ class CatSaveUs:
 
     def _cat_hit(self):
         """Respond to the cat being hit by an alien ship."""
+        cat_hit_sound = pygame.mixer.Sound('sounds/CatHit.wav')
+        game_over_sound = pygame.mixer.Sound('sounds/GameOver.wav')
+        last_cat_sound = pygame.mixer.Sound('sounds/CatMeow.wav')
+
         if self.stats.cats_left > 0:
+            pygame.mixer.Sound.play(cat_hit_sound)
+
             # Decrement cats_left, and update scoreboard.
             self.stats.cats_left -= 1
             self.sb.prep_cats()
@@ -186,6 +204,8 @@ class CatSaveUs:
             # Pause.
             sleep(1)
         else:
+            pygame.mixer.Sound.play(game_over_sound)
+            pygame.mixer.Sound.play(last_cat_sound)
             self.stats.game_active = False
             pygame.mouse.set_visible(True)
 
@@ -257,14 +277,22 @@ class CatSaveUs:
 
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullets group."""
+        cat_bullet_sound = pygame.mixer.Sound('sounds/CatBullet.wav')
+        cat_bullet_sound.set_volume(0.5)
+
         if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
+            pygame.mixer.Sound.play(cat_bullet_sound)
             self.bullets.add(new_bullet)
 
     def _fire_shock_wave(self):
         """Create a new shockwave and add it to the shockwaves group."""
+        cat_shockwave_sound = pygame.mixer.Sound('sounds/EmitShockwave.wav')
+        cat_shockwave_sound.set_volume(0.5)
+
         if len(self.shock_waves) < self.settings.shock_waves_allowed:
             new_shock_wave = ShockWave(self)
+            pygame.mixer.Sound.play(cat_shockwave_sound)
             self.shock_waves.add(new_shock_wave)
 
     def _create_fleet(self):
