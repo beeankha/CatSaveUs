@@ -1,4 +1,5 @@
 import pygame.font
+
 from pygame.sprite import Group
 from cat import CatFace
 
@@ -47,13 +48,26 @@ class Scoreboard:
     def prep_high_score(self):
         """Turn the high score into a rendered image."""
         high_score = round(self.stats.high_score, -1)
-        high_score_str = "High Score: {:,}".format(high_score)
+
+        f = open('high_score.txt', 'r')
+        file = f.readlines()
+        all_time_high_score = int(file[0])
+
+        high_score_str = "High Score: {:,}".format(all_time_high_score)
         self.high_score_image = self.font.render(high_score_str, True, self.text_color, self.settings.bg_color)
 
-        # Center the high score at the top of the screen.
+        # Center the all-time high score at the top of the screen.
         self.high_score_rect = self.high_score_image.get_rect()
         self.high_score_rect.centerx = self.screen_rect.centerx
         self.high_score_rect.top = self.score_rect.top
+
+        if all_time_high_score < int(high_score):
+            f.close()
+            file = open('high_score.txt', 'w')
+            file.write(str(high_score))
+            file.close()
+            return high_score
+        return all_time_high_score
 
     def show_score(self):
         """Draw scores, level, and cats to the screen."""
@@ -63,7 +77,7 @@ class Scoreboard:
         self.cats.draw(self.screen)
 
     def check_high_score(self):
-        """Check ot see if there's a new high score."""
+        """Check to see if there's a new high score."""
         if self.stats.score > self.stats.high_score:
             self.stats.high_score = self.stats.score
             self.prep_high_score()
