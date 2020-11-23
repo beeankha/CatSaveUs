@@ -69,7 +69,6 @@ class Scoreboard:
             return high_score
         return all_time_high_score
 
-
     def show_score(self):
         """Draw scores, level, and cats to the screen."""
         self.screen.blit(self.score_image, self.score_rect)

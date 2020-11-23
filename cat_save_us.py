@@ -365,7 +365,7 @@ class CatSaveUs:
 
         # Draw the score information.
         self.sb.show_score()
-
+        self.sb.prep_high_score()
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
             self.play_button.draw_button()
