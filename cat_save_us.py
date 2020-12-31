@@ -55,7 +55,7 @@ class CatSaveUs:
     def run_game(self):
         """Start the main loop for the game."""
         while True:
-            self._check_events()  # ??????
+            self._check_events()
             # ^^ The above calls a helper method!
 
             if self.stats.game_active:
@@ -220,7 +220,7 @@ class CatSaveUs:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self._check_keydown_events(event)  # ??????
+                self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -231,6 +231,16 @@ class CatSaveUs:
                     self._check_play_button(mouse_pos)
 
     def pause(self):
+        self.screen.fill((0, 0, 0))
+        my_font = pygame.font.SysFont("monospace", 35, True)
+
+        text1 = my_font.render("PAUSED", 40, (70, 160, 190))
+        text2 = my_font.render("(press C to continue or Q to quit)", 40, (70, 160, 190))
+        self.screen.blit(text2, (200, 200))
+        self.screen.blit(text1, (200, 100))
+
+        pygame.display.update()
+
         paused = True
         while paused:
             for event in pygame.event.get():
@@ -243,6 +253,8 @@ class CatSaveUs:
                     elif event.key == pygame.K_q:
                         pygame.quit()
                         quit()
+
+            pygame.display.update()
 
     def _check_play_button(self, mouse_pos):
         """Start a new game when the player clicks Play."""
@@ -279,8 +291,6 @@ class CatSaveUs:
             sys.exit()
         elif event.key == pygame.K_p:
             self.pause()
-            self.pause_button = Button(self, "Paused\nPress C to continue or Q to quit.")
-            pygame.display.update()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_LSHIFT:
