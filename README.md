@@ -49,4 +49,6 @@ Press the left shift key to shoot a shockwave!
 
 ![shockwave](/images/shockwave.png)
 
+Type `p` to pause the game (and `c` to resume the game after pausing).
+
 Type `q` to quit out of the game.
