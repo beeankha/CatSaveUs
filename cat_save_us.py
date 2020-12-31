@@ -230,6 +230,32 @@ class CatSaveUs:
                     mouse_pos = pygame.mouse.get_pos()
                     self._check_play_button(mouse_pos)
 
+    def pause(self):
+        self.screen.fill((0, 0, 0))
+        my_font = pygame.font.SysFont("monospace", 35, True)
+
+        text1 = my_font.render("PAUSED", 40, (70, 160, 190))
+        text2 = my_font.render("(press C to continue or Q to quit)", 40, (70, 160, 190))
+        self.screen.blit(text2, (200, 200))
+        self.screen.blit(text1, (200, 100))
+
+        pygame.display.update()
+
+        paused = True
+        while paused:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_c:
+                        paused = False
+                    elif event.key == pygame.K_q:
+                        pygame.quit()
+                        quit()
+
+            pygame.display.update()
+
     def _check_play_button(self, mouse_pos):
         """Start a new game when the player clicks Play."""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
@@ -263,6 +289,8 @@ class CatSaveUs:
             self.cat.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_p:
+            self.pause()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_LSHIFT:
