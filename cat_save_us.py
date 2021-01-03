@@ -46,7 +46,7 @@ class CatSaveUs:
         # Make the Play button.
         self.play_button = Button(self, "Double Click to Play")
 
-        bg_music = 'sounds/BuzzsawsOnMercury.wav'
+        bg_music = 'sounds/VenusHotline.wav'
         pygame.mixer.init()
         pygame.mixer.music.load(bg_music)
         pygame.mixer.music.play(-1)  # the loop of -1 means this song will repeate indefinitely
